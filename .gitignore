@@ -1,4 +1,9 @@
+# les binaires
+target/
 *.class
+
+# les libs
+lib/
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
