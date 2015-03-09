@@ -1,4 +1,5 @@
-package com.example;
+package plateform;
+
 
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.eclipse.jetty.server.Server;
@@ -7,7 +8,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import com.example.config.AppConfig;
+import plateform.config.AppConfig;
 
 public class Starter {
 	public static void main( final String[] args ) throws Exception {

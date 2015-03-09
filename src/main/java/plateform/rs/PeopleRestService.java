@@ -1,4 +1,4 @@
-package com.example.rs;
+package plateform.rs;
 
 import java.util.Collection;
 
@@ -18,8 +18,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import com.example.model.Person;
-import com.example.services.PeopleService;
+import plateform.model.Person;
+import plateform.services.PeopleService;
 
 @Path( "/people" ) 
 public class PeopleRestService {

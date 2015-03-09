@@ -1,4 +1,4 @@
-package com.example.services;
+package plateform.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,9 +8,9 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.springframework.stereotype.Service;
 
-import com.example.exceptions.PersonAlreadyExistsException;
-import com.example.exceptions.PersonNotFoundException;
-import com.example.model.Person;
+import plateform.exceptions.PersonAlreadyExistsException;
+import plateform.exceptions.PersonNotFoundException;
+import plateform.model.Person;
 
 @Service
 public class PeopleService {
