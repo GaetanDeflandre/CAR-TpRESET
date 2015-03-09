@@ -1,6 +1,7 @@
 package res;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -8,21 +9,28 @@ import javax.ws.rs.Produces;
 /**
  * Exemple de ressource REST accessible a l'adresse :
  * 
- * http://localhost:8080/rest/api/toto
+ * http://localhost:8080/rest/api/cmd
  * 
  * @author Lionel Seinturier <Lionel.Seinturier@univ-lille1.fr>
  */
-@Path("/toto")
-public class TotoResource {
+@Path("/cmd")
+public class CmdResource {
 
 	@GET
 	@Produces("text/html")
 	public String sayHello() {
-		return "<h1>Hello World Toto</h1>";
+		String output;
+		
+		output = "<h1>POST</h1>";
+		
+		return output;
 	}
+	
+	
 
 	@GET
-	@Path("/book/{isbn}")
+	@Path("/param/{isbn}")
+	@Produces("text/html")
 	public String getBook(@PathParam("isbn") String isbn) {
 		return "Book: " + isbn;
 	}

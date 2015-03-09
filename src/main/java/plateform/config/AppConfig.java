@@ -18,7 +18,7 @@ import plateform.rs.JaxRsApiApplication;
 import plateform.rs.PeopleRestService;
 import plateform.services.PeopleService;
 import res.HelloWorldResource;
-import res.TotoResource;
+import res.CmdResource;
 
 @Configuration
 public class AppConfig {	
@@ -34,7 +34,7 @@ public class AppConfig {
 		List<Object> serviceBeans = new ArrayList<Object>();
 //		serviceBeans.add(peopleRestService());
 		serviceBeans.add(new HelloWorldResource());
-		serviceBeans.add(new TotoResource());
+		serviceBeans.add(new CmdResource());
 		
 		
 		factory.setServiceBeans(serviceBeans);
