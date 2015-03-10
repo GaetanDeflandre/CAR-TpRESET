@@ -11,7 +11,7 @@ public class CliFTP {
 		// TODO Auto-generated method stub
 		FTPClient f = new FTPClient();
 		FTPClientConfig conf = new FTPClientConfig(FTPClientConfig.SYST_UNIX);
-		conf.setServerLanguageCode("fr_FR");
+		conf.setServerLanguageCode("en_EN");
 		f.configure(conf);
 
 		try {
