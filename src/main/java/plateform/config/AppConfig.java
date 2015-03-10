@@ -17,8 +17,8 @@ import org.springframework.context.annotation.DependsOn;
 import plateform.rs.JaxRsApiApplication;
 import plateform.rs.PeopleRestService;
 import plateform.services.PeopleService;
+import res.DirResource;
 import res.HelloWorldResource;
-import res.CmdResource;
 
 @Configuration
 public class AppConfig {	
@@ -34,7 +34,7 @@ public class AppConfig {
 		List<Object> serviceBeans = new ArrayList<Object>();
 //		serviceBeans.add(peopleRestService());
 		serviceBeans.add(new HelloWorldResource());
-		serviceBeans.add(new CmdResource());
+		serviceBeans.add(new DirResource());
 		
 		
 		factory.setServiceBeans(serviceBeans);

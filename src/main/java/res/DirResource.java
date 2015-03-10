@@ -1,7 +1,6 @@
 package res;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -13,23 +12,21 @@ import javax.ws.rs.Produces;
  * 
  * @author Lionel Seinturier <Lionel.Seinturier@univ-lille1.fr>
  */
-@Path("/cmd")
-public class CmdResource {
+@Path("/")
+public class DirResource {
 
 	@GET
 	@Produces("text/html")
-	public String sayHello() {
+	public String test() {
 		String output;
-		
-		output = "<h1>POST</h1>";
-		
+
+		output = "<h1>bonjour asiat</h1>";
+
 		return output;
 	}
-	
-	
 
 	@GET
-	@Path("/param/{isbn}")
+	@Path("dir/{isbn}")
 	@Produces("text/html")
 	public String getBook(@PathParam("isbn") String isbn) {
 		return "Book: " + isbn;
