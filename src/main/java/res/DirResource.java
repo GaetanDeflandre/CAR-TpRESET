@@ -15,6 +15,9 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
+import utils.HtmlUtils;
+import utils.FtpUtils;
+
 /**
  * Exemple de ressource REST accessible a l'adresse :
  * 
@@ -25,12 +28,6 @@ import org.apache.commons.net.ftp.FTPFile;
 @Path("/dir")
 public class DirResource {
 
-	public final static String ADDRESS = "127.0.0.1";
-	public final static int PORT = 2121;
-	public final static String ENDL = "\r\n";
-
-	public final static String LOGIN = "toto";
-	public final static String PASS = "mdp";
 	public final static String RES_ABS_PATH = "http://localhost:8080/rest/api/dir";
 	public final static String RES_ROOT = "dir";
 
@@ -40,24 +37,24 @@ public class DirResource {
 		String html;
 		FTPClient client = new FTPClient();
 
-		html = "<h1>Ressources repertoires</h1>" + ENDL;
+		html = "<h1>Ressources repertoires</h1>" + HtmlUtils.ENDL;
 
 		// CONNECT
 		try {
-			client.connect(ADDRESS, PORT);
+			client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
 		} catch (SocketException e) {
-			html += e.getMessage() + ENDL;
+			html += e.getMessage() + HtmlUtils.ENDL;
 			return html;
 		} catch (IOException e) {
-			html += e.getMessage() + ENDL;
+			html += e.getMessage() + HtmlUtils.ENDL;
 			return html;
 		}
 
 		// LOG
 		try {
-			client.login(LOGIN, PASS);
+			client.login(FtpUtils.LOGIN, FtpUtils.PASS);
 		} catch (IOException e) {
-			html += e.getMessage() + ENDL;
+			html += e.getMessage() + HtmlUtils.ENDL;
 			return html;
 		}
 
@@ -65,27 +62,27 @@ public class DirResource {
 		try {
 			FTPFile[] files = client.listFiles();
 
-			html += "<ul>" + ENDL;
+			html += "<ul>" + HtmlUtils.ENDL;
 			for (FTPFile file : files) {
 				if (file.isDirectory()) {
 					html += "<li><a href=" + RES_ABS_PATH + "/"
 							+ file.getName() + ">";
 					html += file.getName();
-					html += "</a></li>" + ENDL;
+					html += "</a></li>" + HtmlUtils.ENDL;
 
 				} else if (file.isFile()) {
 					html += "<li><a href=#>";
 					html += file.getName();
-					html += "</a></li>" + ENDL;
+					html += "</a></li>" + HtmlUtils.ENDL;
 
 				} else {
-					html += "<li>" + file.getName() + "</li>" + ENDL;
+					html += "<li>" + file.getName() + "</li>" + HtmlUtils.ENDL;
 				}
 			}
-			html += "</ul>" + ENDL;
+			html += "</ul>" + HtmlUtils.ENDL;
 
 		} catch (IOException e) {
-			html += e.getMessage() + ENDL;
+			html += e.getMessage() + HtmlUtils.ENDL;
 			return html;
 		}
 
@@ -94,7 +91,7 @@ public class DirResource {
 			client.quit();
 			client.disconnect();
 		} catch (IOException e) {
-			html += e.getMessage() + ENDL;
+			html += e.getMessage() + HtmlUtils.ENDL;
 			return html;
 		}
 
@@ -127,7 +124,7 @@ public class DirResource {
 
 		// CONNECT
 		try {
-			client.connect(ADDRESS, PORT);
+			client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
 		} catch (SocketException e) {
 			res = Response.serverError().build();
 			return res;
@@ -138,7 +135,7 @@ public class DirResource {
 
 		// LOG
 		try {
-			client.login(LOGIN, PASS);
+			client.login(FtpUtils.LOGIN, FtpUtils.PASS);
 		} catch (IOException e) {
 			res = Response.serverError().build();
 			return res;
