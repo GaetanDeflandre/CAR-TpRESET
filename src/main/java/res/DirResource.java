@@ -15,20 +15,18 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
-import utils.HtmlUtils;
+import plateform.config.AppConfig;
 import utils.FtpUtils;
+import utils.HtmlUtils;
 
 /**
  * Exemple de ressource REST accessible a l'adresse :
  * 
- * http://localhost:8080/rest/api/cmd
- * 
- * @author Lionel Seinturier <Lionel.Seinturier@univ-lille1.fr>
+ * http://localhost:8080/rest/api/dir
  */
 @Path("/dir")
 public class DirResource {
 
-	public final static String RES_ABS_PATH = "http://localhost:8080/rest/api/dir";
 	public final static String RES_ROOT = "dir";
 
 	@GET
@@ -65,13 +63,14 @@ public class DirResource {
 			html += "<ul>" + HtmlUtils.ENDL;
 			for (FTPFile file : files) {
 				if (file.isDirectory()) {
-					html += "<li><a href=" + RES_ABS_PATH + "/"
-							+ file.getName() + ">";
+					html += "<li><a href=" + AppConfig.RES_ABS_PATH + RES_ROOT
+							+ "/" + file.getName() + ">";
 					html += file.getName();
 					html += "</a></li>" + HtmlUtils.ENDL;
 
 				} else if (file.isFile()) {
-					html += "<li><a href='http://localhost:8080/rest/api/file/"+ file.getName() +"'>";
+					html += "<li><a href='http://localhost:8080/rest/api/file/"
+							+ file.getName() + "'>";
 					html += file.getName();
 					html += "</a></li>" + HtmlUtils.ENDL;
 
@@ -99,10 +98,9 @@ public class DirResource {
 	}
 
 	/*
-	 * /!\ README 
-	 * La methode change dir est fonctionelle: elle fait le CWD coté
-	 * serveur mais comme on quit le serveur, le chemin n'est pas 
-	 * retenu coté serveur
+	 * /!\ README La methode change dir est fonctionelle: elle fait le CWD coté
+	 * serveur mais comme on quit le serveur, le chemin n'est pas retenu coté
+	 * serveur
 	 */
 
 	/**
