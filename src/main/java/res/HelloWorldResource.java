@@ -5,6 +5,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
+import uk.co.wireweb.web.html.html5.tag.Body;
+import uk.co.wireweb.web.html.html5.tag.H1;
+import uk.co.wireweb.web.html.html5.tag.Head;
+import uk.co.wireweb.web.html.html5.tag.Html;
+import uk.co.wireweb.web.html.html5.tag.Title;
+
 /**
  * Exemple de ressource REST accessible a l'adresse :
  * 
@@ -18,7 +24,16 @@ public class HelloWorldResource {
 	@GET
 	@Produces("text/html")
 	public String sayHello() {
-		return "<h1>Hello World</h1>";
+        final Html html = new Html();
+        final Head head = new Head();
+        final Body body = new Body();
+        
+        head.child(new Title().body("Helloworld Resource"));
+        body.child(new H1().body("Helloworld"));
+        
+        html.child(head);
+        html.child(body);
+		return html.toString();
 	}
 
 	@GET
