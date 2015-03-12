@@ -74,7 +74,7 @@ public class DirResource {
 					html += "</a></li>" + ENDL;
 
 				} else if (file.isFile()) {
-					html += "<li><a href=#>";
+					html += "<li><a href='http://localhost:8080/rest/api/file/"+ file.getName() +"'>";
 					html += file.getName();
 					html += "</a></li>" + ENDL;
 
