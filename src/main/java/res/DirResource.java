@@ -1,5 +1,7 @@
 package res;
 
+import html.HtmlRestListDocument;
+
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.URI;
@@ -31,70 +33,25 @@ public class DirResource {
 
 	@GET
 	@Produces("text/html")
-	public String directories() {
-		String html;
+	public String directories() throws SocketException, IOException {
 		FTPClient client = new FTPClient();
 
-		html = "<h1>Ressources repertoires</h1>" + HtmlUtils.ENDL;
-
 		// CONNECT
-		try {
-			client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
-		} catch (SocketException e) {
-			html += e.getMessage() + HtmlUtils.ENDL;
-			return html;
-		} catch (IOException e) {
-			html += e.getMessage() + HtmlUtils.ENDL;
-			return html;
-		}
+		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
 
 		// LOG
-		try {
-			client.login(FtpUtils.LOGIN, FtpUtils.PASS);
-		} catch (IOException e) {
-			html += e.getMessage() + HtmlUtils.ENDL;
-			return html;
-		}
+		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
 
 		// LIST
-		try {
-			FTPFile[] files = client.listFiles();
+		FTPFile[] files = client.listFiles();
 
-			html += "<ul>" + HtmlUtils.ENDL;
-			for (FTPFile file : files) {
-				if (file.isDirectory()) {
-					html += "<li><a href=" + AppConfig.RES_ABS_PATH + RES_ROOT
-							+ "/" + file.getName() + ">";
-					html += file.getName();
-					html += "</a></li>" + HtmlUtils.ENDL;
-
-				} else if (file.isFile()) {
-					html += "<li><a href='http://localhost:8080/rest/api/file/"
-							+ file.getName() + "'>";
-					html += file.getName();
-					html += "</a></li>" + HtmlUtils.ENDL;
-
-				} else {
-					html += "<li>" + file.getName() + "</li>" + HtmlUtils.ENDL;
-				}
-			}
-			html += "</ul>" + HtmlUtils.ENDL;
-
-		} catch (IOException e) {
-			html += e.getMessage() + HtmlUtils.ENDL;
-			return html;
-		}
-
+		HtmlRestListDocument html = new HtmlRestListDocument(files);
+		
 		// QUIT
-		try {
-			client.quit();
-			client.disconnect();
-		} catch (IOException e) {
-			html += e.getMessage() + HtmlUtils.ENDL;
-			return html;
-		}
+		client.quit();
+		client.disconnect();
 
-		return html;
+		return html.toString();
 	}
 
 	/*
