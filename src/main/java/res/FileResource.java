@@ -22,9 +22,33 @@ import org.apache.commons.net.ftp.FTPClient;
 import user.UserManager;
 import utils.FtpUtils;
 
+/**
+ * Représente une ressource REST de type fichier. Précisément, 
+ * une instance de cette classe représente un fichier sur le 
+ * serveur FTP de l'application. Les méthodes de cette classe 
+ * se réfèrent à la classe UserManager pour obtenir les chemins
+ * de répertoire courant de l'utilisateur. Les noms de fichier
+ * passés en argument sont donc relatifs au répertoire courant 
+ * de l'utilisateur.
+ * 
+ * @author Samuel Grandsir
+ *
+ */
 @Path("/{username}/file/{filename}")
 public class FileResource {
 	
+	/**
+	 * Permet au client de télécharger un fichier. La méthode
+	 * communique avec le serveur FTP pour récupérer le fichier, 
+	 * puis renvoie une instance d'InputStream pour construire 
+	 * la réponse HTTP.
+	 * 
+	 * @param uriInfo
+	 * @param filename le nom du fichier à récupérer sur le serveur FTP.
+	 * @param username
+	 * @return une instance d'InputStream permettant de lire le fichier.
+	 * @throws IOException
+	 */
 	@GET
 	@Produces("application/octet-stream")
 	public InputStream getFile(@Context UriInfo uriInfo, @PathParam("filename") String filename,
@@ -53,9 +77,17 @@ public class FileResource {
 		return fileInput;
 	}
 	
+	/**
+	 * Permet au client de supprimer un fichier sur le serveur FTP.
+	 * 
+	 * @param filename le nom du fichier à supprimer sur le serveur FTP.
+	 * @param username
+	 * @return une réponse HTTP positive en cas de succès, une réponse négative sinon.
+	 * @throws IOException
+	 */
 	@DELETE
 	public Response deleteFile(@PathParam("filename") String filename,
-							   @PathParam("username") String username) throws SocketException, IOException {
+							   @PathParam("username") String username) throws IOException {
 		
 		FTPClient client = new FTPClient();
 		String path;
@@ -84,12 +116,25 @@ public class FileResource {
 			return Response.serverError().build();
 	}
 	
+	/**
+	 * Permet au client de transférer un fichier sur le serveur FTP
+	 * avec la méthode PUT. Le nom du fichier côté serveur est celui 
+	 * donné dans l'URI. Si un fichier porte déjà ce nom côté serveur, 
+	 * il sera écrasé.
+	 * 
+	 * @param filename le nom du fichier sur le serveur
+	 * @param username
+	 * @param inputStream l'instance d'InputStream permettant de lire le 
+	 * contenu du fichier à transférer.
+	 * @return une réponse HTTP positive en cas de succès, une réponse négative sinon.
+	 * @throws IOException
+	 */
 	@PUT
 	@Consumes("application/octet-stream")
 	public Response storeFile(@PathParam("filename") String filename,
 							@PathParam("username") String username,
 							InputStream inputStream
-							) throws SocketException, IOException {
+							) throws IOException {
 		
 		FTPClient client = new FTPClient();
 		String path;
