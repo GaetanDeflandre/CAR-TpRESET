@@ -11,6 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -30,13 +31,20 @@ public class DirResource {
 
 	public final static String RES_ROOT = "dir";
 
+	/**
+	 * 
+	 * @param username
+	 *            Nom de l'utilisateur dans l'URL.
+	 * @return La liste des fichier du répertoire courant en format HTML.
+	 * @throws IOException
+	 */
 	@GET
-	@Produces("text/html")
-	public String directories(@PathParam("username") String username)
+	@Produces({ MediaType.TEXT_HTML })
+	public String dirHtml(@PathParam("username") String username)
 			throws IOException {
 
 		String path;
-		FTPClient client = new FTPClient();
+		final FTPClient client = new FTPClient();
 
 		// CONNECT
 		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
@@ -56,7 +64,8 @@ public class DirResource {
 		// LIST
 		FTPFile[] files = client.listFiles();
 
-		HtmlRestListDocument html = new HtmlRestListDocument(username, files);
+		HtmlRestListDocument html = new HtmlRestListDocument(username, path,
+				files);
 
 		// QUIT
 		client.logout();
@@ -66,11 +75,63 @@ public class DirResource {
 	}
 
 	/**
+	 * curl -v -X GET http://localhost:8080/rest/api/toto/dir/json -H "Content-type: application/json"
+	 * 
+	 * @param username Nom de l'utilisateur dans l'URL.
+	 * @return La liste des fichier du répertoire courant en format JSON.
+	 * @throws IOException
+	 */
+	@GET
+	@Path("/json")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public String dirJSon(@PathParam("username") String username)
+			throws IOException {
+		
+		/*
+		 * {
+		 * 	 "files":[
+		 * 		{"name":"src","type":"dir"},
+		 *  	{"name":"bin","type":"dir"},
+		 *  	{"name":"README.md","type":"file"}
+		 *   ] 
+		 * }
+		 */
+		
+		String path;
+		final FTPClient client = new FTPClient();
+
+		// CONNECT
+		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
+
+		// LOG
+		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
+
+		UserManager userManager = UserManager.getInstance();
+
+		// CHANGE DIRECTORY
+		path = userManager.getPath(username);
+		if (!client.changeWorkingDirectory(path)) {
+			path = client.printWorkingDirectory();
+			userManager.putPath(username, path);
+		}
+
+		// LIST
+		FTPFile[] files = client.listFiles();
+		
+		
+		// QUIT
+		client.logout();
+		client.disconnect();
+		
+		return "test\n";
+	}
+
+	/**
 	 * Change directory
 	 * 
 	 * @param uriInfo
 	 * @param dirName
-	 * @return
+	 * @return 
 	 * @throws IOException
 	 * @throws SocketException
 	 */
@@ -117,10 +178,5 @@ public class DirResource {
 		return this.changeDir(uriInfo, "..", username);
 	}
 
-	@GET
-	@Path("{var}/b")
-	public String getStuff(@PathParam("var") String stuff) {
-		return "Stuff: " + stuff;
-	}
 
 }

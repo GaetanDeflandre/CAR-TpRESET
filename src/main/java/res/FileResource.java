@@ -2,7 +2,6 @@ package res;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -52,7 +51,7 @@ public class FileResource {
 	 * @throws IOException
 	 */
 	@GET
-	@Produces("application/octet-stream")
+	@Produces({ MediaType.APPLICATION_OCTET_STREAM })
 	public InputStream getFile(@Context UriInfo uriInfo, @PathParam("filename") String filename,
 							@PathParam("username") String username) throws IOException {
 		FTPClient client = new FTPClient();
@@ -132,7 +131,7 @@ public class FileResource {
 	 * @throws IOException
 	 */
 	@PUT
-	@Consumes("application/octet-stream")
+	@Consumes({ MediaType.APPLICATION_OCTET_STREAM })
 	public Response storeFile(@PathParam("filename") String filename,
 							@PathParam("username") String username,
 							InputStream inputStream

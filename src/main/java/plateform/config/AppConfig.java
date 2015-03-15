@@ -19,7 +19,6 @@ import plateform.rs.PeopleRestService;
 import plateform.services.PeopleService;
 import res.DirResource;
 import res.FileResource;
-import res.HelloWorldResource;
 
 @Configuration
 public class AppConfig {
@@ -43,7 +42,6 @@ public class AppConfig {
 
 		List<Object> serviceBeans = new ArrayList<Object>();
 		// serviceBeans.add(peopleRestService());
-		serviceBeans.add(new HelloWorldResource());
 		serviceBeans.add(new DirResource());
 		serviceBeans.add(new FileResource());
 

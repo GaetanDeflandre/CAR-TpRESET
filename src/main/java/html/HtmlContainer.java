@@ -1,7 +1,7 @@
 package html;
 
 /**
- * Classe abstraite qui permet d'uniformiser les classes qui contienne dde
+ * Classe abstraite qui permet d'uniformiser les classes qui contienne de
  * l'HTML.
  */
 public abstract class HtmlContainer {
@@ -23,7 +23,8 @@ public abstract class HtmlContainer {
 	/**
 	 * Fixe le contenu HTML avec le nouveau contenu <tt>htmlContent</tt>.
 	 * 
-	 * @param htmlContent Le nouveau contenu HTML.
+	 * @param htmlContent
+	 *            Le nouveau contenu HTML.
 	 */
 	protected void setHtmlContent(String htmlContent) {
 		this.htmlContent = htmlContent;
