@@ -15,6 +15,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import json.JsonRestList;
+
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
@@ -116,14 +118,14 @@ public class DirResource {
 		}
 
 		// LIST
-		FTPFile[] files = client.listFiles();
-		
+		final FTPFile[] files = client.listFiles();
+		final JsonRestList json = new JsonRestList(username, path, files);
 		
 		// QUIT
 		client.logout();
 		client.disconnect();
 		
-		return "test\n";
+		return json.toString() + "\n";
 	}
 
 	/**
