@@ -16,6 +16,7 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
 import plateform.config.AppConfig;
+import user.UserManager;
 import utils.FtpUtils;
 import utils.HtmlUtils;
 
@@ -24,36 +25,32 @@ import utils.HtmlUtils;
  * 
  * http://localhost:8080/rest/api/dir
  */
-@Path("/dir")
+@Path("/{username}/dir")
 public class DirResource {
 
 	public final static String RES_ROOT = "dir";
 
 	@GET
 	@Produces("text/html")
-	public String directories() {
-		String html;
+	public String directories(@PathParam("username") String username) throws IOException {
+		String html, path;
 		FTPClient client = new FTPClient();
-
+		
 		html = "<h1>Ressources repertoires</h1>" + HtmlUtils.ENDL;
 
 		// CONNECT
-		try {
-			client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
-		} catch (SocketException e) {
-			html += e.getMessage() + HtmlUtils.ENDL;
-			return html;
-		} catch (IOException e) {
-			html += e.getMessage() + HtmlUtils.ENDL;
-			return html;
-		}
+		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
 
 		// LOG
-		try {
-			client.login(FtpUtils.LOGIN, FtpUtils.PASS);
-		} catch (IOException e) {
-			html += e.getMessage() + HtmlUtils.ENDL;
-			return html;
+		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
+		
+		UserManager userManager = UserManager.getInstance();
+		
+		// CHANGE DIRECTORY
+		path = userManager.getPath(username);
+		if (!client.changeWorkingDirectory(path)) {
+			path = client.printWorkingDirectory();
+			userManager.putPath(username, path);
 		}
 
 		// LIST
@@ -61,15 +58,19 @@ public class DirResource {
 			FTPFile[] files = client.listFiles();
 
 			html += "<ul>" + HtmlUtils.ENDL;
+			html += "<a href=" + AppConfig.RES_ABS_PATH + username 
+					+ "/" + RES_ROOT+ "/cdup>";
+			html += "<h4>Dossier parent &#8682;</h4>";
+			html += "</a>" + HtmlUtils.ENDL;
 			for (FTPFile file : files) {
 				if (file.isDirectory()) {
-					html += "<li><a href=" + AppConfig.RES_ABS_PATH + RES_ROOT
-							+ "/" + file.getName() + ">";
+					html += "<li><a href=" + AppConfig.RES_ABS_PATH + username 
+							+ "/" + RES_ROOT+ "/" + file.getName() + ">";
 					html += file.getName();
 					html += "</a></li>" + HtmlUtils.ENDL;
 
 				} else if (file.isFile()) {
-					html += "<li><a href='http://localhost:8080/rest/api/file/"
+					html += "<li><a href='http://localhost:8080/rest/api/" + username + "/file/"
 							+ file.getName() + "'>";
 					html += file.getName();
 					html += "</a></li>" + HtmlUtils.ENDL;
@@ -86,13 +87,8 @@ public class DirResource {
 		}
 
 		// QUIT
-		try {
-			client.quit();
-			client.disconnect();
-		} catch (IOException e) {
-			html += e.getMessage() + HtmlUtils.ENDL;
-			return html;
-		}
+		client.logout();
+		client.disconnect();
 
 		return html;
 	}
@@ -109,11 +105,14 @@ public class DirResource {
 	 * @param uriInfo
 	 * @param dirName
 	 * @return
+	 * @throws IOException 
+	 * @throws SocketException 
 	 */
 	@GET
 	@Path("/{dirname}")
 	public Response changeDir(@Context UriInfo uriInfo,
-			@PathParam("dirname") String dirName) {
+			@PathParam("dirname") String dirName,
+			@PathParam("username") String username) throws SocketException, IOException {
 
 		Response res;
 		URI uri;
@@ -121,44 +120,32 @@ public class DirResource {
 		FTPClient client = new FTPClient();
 
 		// CONNECT
-		try {
-			client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
-		} catch (SocketException e) {
-			res = Response.serverError().build();
-			return res;
-		} catch (IOException e) {
-			res = Response.serverError().build();
-			return res;
-		}
+		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
 
 		// LOG
-		try {
-			client.login(FtpUtils.LOGIN, FtpUtils.PASS);
-		} catch (IOException e) {
-			res = Response.serverError().build();
-			return res;
-		}
+		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
 
 		// CHANGE DIR
-		try {
-			client.changeWorkingDirectory(dirName);
-		} catch (IOException e) {
-			res = Response.serverError().build();
-			return res;
-		}
+		UserManager userManager = UserManager.getInstance();
+		client.changeWorkingDirectory(userManager.getPath(username));
+		client.changeWorkingDirectory(dirName);
+		userManager.putPath(username, client.printWorkingDirectory());
 
 		// QUIT
-		try {
-			client.quit();
-			client.disconnect();
-		} catch (IOException e) {
-			res = Response.serverError().build();
-			return res;
-		}
+		client.logout();
+		client.disconnect();
 
-		uri = uriInfo.getBaseUriBuilder().path(RES_ROOT).build();
+		uri = uriInfo.getBaseUriBuilder().path(username + "/" + RES_ROOT).build();
 		res = Response.seeOther(uri).build();
 		return res;
+	}
+	
+	@GET
+	@Path("/cdup")
+	public Response changeToParentDir(@Context UriInfo uriInfo,
+			@PathParam("username") String username) throws SocketException, IOException {
+
+		return this.changeDir(uriInfo, "..", username);
 	}
 
 	@GET
