@@ -17,23 +17,25 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
-import plateform.config.AppConfig;
+import user.UserManager;
 import utils.FtpUtils;
-import utils.HtmlUtils;
 
 /**
  * Exemple de ressource REST accessible a l'adresse :
  * 
  * http://localhost:8080/rest/api/dir
  */
-@Path("/dir")
+@Path("/{username}/dir")
 public class DirResource {
 
 	public final static String RES_ROOT = "dir";
 
 	@GET
 	@Produces("text/html")
-	public String directories() throws SocketException, IOException {
+	public String directories(@PathParam("username") String username)
+			throws IOException {
+
+		String path;
 		FTPClient client = new FTPClient();
 
 		// CONNECT
@@ -42,23 +44,26 @@ public class DirResource {
 		// LOG
 		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
 
+		UserManager userManager = UserManager.getInstance();
+
+		// CHANGE DIRECTORY
+		path = userManager.getPath(username);
+		if (!client.changeWorkingDirectory(path)) {
+			path = client.printWorkingDirectory();
+			userManager.putPath(username, path);
+		}
+
 		// LIST
 		FTPFile[] files = client.listFiles();
 
-		HtmlRestListDocument html = new HtmlRestListDocument(files);
-		
+		HtmlRestListDocument html = new HtmlRestListDocument(username, files);
+
 		// QUIT
-		client.quit();
+		client.logout();
 		client.disconnect();
 
 		return html.toString();
 	}
-
-	/*
-	 * /!\ README La methode change dir est fonctionelle: elle fait le CWD coté
-	 * serveur mais comme on quit le serveur, le chemin n'est pas retenu coté
-	 * serveur
-	 */
 
 	/**
 	 * Change directory
@@ -66,11 +71,15 @@ public class DirResource {
 	 * @param uriInfo
 	 * @param dirName
 	 * @return
+	 * @throws IOException
+	 * @throws SocketException
 	 */
 	@GET
 	@Path("/{dirname}")
 	public Response changeDir(@Context UriInfo uriInfo,
-			@PathParam("dirname") String dirName) {
+			@PathParam("dirname") String dirName,
+			@PathParam("username") String username) throws SocketException,
+			IOException {
 
 		Response res;
 		URI uri;
@@ -78,44 +87,34 @@ public class DirResource {
 		FTPClient client = new FTPClient();
 
 		// CONNECT
-		try {
-			client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
-		} catch (SocketException e) {
-			res = Response.serverError().build();
-			return res;
-		} catch (IOException e) {
-			res = Response.serverError().build();
-			return res;
-		}
+		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
 
 		// LOG
-		try {
-			client.login(FtpUtils.LOGIN, FtpUtils.PASS);
-		} catch (IOException e) {
-			res = Response.serverError().build();
-			return res;
-		}
+		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
 
 		// CHANGE DIR
-		try {
-			client.changeWorkingDirectory(dirName);
-		} catch (IOException e) {
-			res = Response.serverError().build();
-			return res;
-		}
+		UserManager userManager = UserManager.getInstance();
+		client.changeWorkingDirectory(userManager.getPath(username));
+		client.changeWorkingDirectory(dirName);
+		userManager.putPath(username, client.printWorkingDirectory());
 
 		// QUIT
-		try {
-			client.quit();
-			client.disconnect();
-		} catch (IOException e) {
-			res = Response.serverError().build();
-			return res;
-		}
+		client.logout();
+		client.disconnect();
 
-		uri = uriInfo.getBaseUriBuilder().path(RES_ROOT).build();
+		uri = uriInfo.getBaseUriBuilder().path(username + "/" + RES_ROOT)
+				.build();
 		res = Response.seeOther(uri).build();
 		return res;
+	}
+
+	@GET
+	@Path("/cdup")
+	public Response changeToParentDir(@Context UriInfo uriInfo,
+			@PathParam("username") String username) throws SocketException,
+			IOException {
+
+		return this.changeDir(uriInfo, "..", username);
 	}
 
 	@GET
