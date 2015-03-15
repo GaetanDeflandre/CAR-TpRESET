@@ -6,18 +6,40 @@ import uk.co.wireweb.web.html.html5.tag.Head;
 import uk.co.wireweb.web.html.html5.tag.Html;
 
 /**
- * Simple document HTML avec un head et un body, le tout dans une balise html.
+ * Simple page HTML avec un head et un body, le tout dans une balise html.
  */
 public class HtmlDocument extends HtmlContainer {
 
+	// ATTRIBUTES //
+
+	/**
+	 * La balise head bas niveau.
+	 */
 	private Head head;
+
+	/**
+	 * La balise body bas niveau.
+	 */
 	private Body body;
 
+	// CONSTRUCTOR //
+
+	/**
+	 * Construit la page HTML avec un head <tt>head</tt> et un body
+	 * <tt>body</tt>.
+	 * 
+	 * @param head
+	 *            La balise head de la page.
+	 * @param body
+	 *            La balise body de la page.
+	 */
 	public HtmlDocument(final Head head, final Body body) {
 		this.head = head;
 		this.body = body;
 		generate();
 	}
+
+	// METHOD //
 
 	@Override
 	protected void generate() {
