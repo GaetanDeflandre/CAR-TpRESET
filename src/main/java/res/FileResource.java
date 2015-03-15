@@ -27,7 +27,7 @@ public class FileResource {
 	
 	@GET
 	@Produces("application/octet-stream")
-	public Response getFile(@Context UriInfo uriInfo, @PathParam("filename") String filename,
+	public InputStream getFile(@Context UriInfo uriInfo, @PathParam("filename") String filename,
 							@PathParam("username") String username) throws IOException {
 		FTPClient client = new FTPClient();
 		String path;
@@ -50,10 +50,7 @@ public class FileResource {
 		client.logout();
 		client.disconnect();
 		
-		if (fileInput == null)
-			return Response.serverError().build();
-		else
-			return Response.ok(fileInput, MediaType.APPLICATION_OCTET_STREAM).build();
+		return fileInput;
 	}
 	
 	@DELETE
@@ -109,6 +106,7 @@ public class FileResource {
 		path = userManager.getPath(username);
 		client.changeWorkingDirectory(path);
 		
+		client.setFileType(FTP.BINARY_FILE_TYPE);
 		storeSuccessful = client.storeFile(filename, inputStream);
 		
 		// QUIT
