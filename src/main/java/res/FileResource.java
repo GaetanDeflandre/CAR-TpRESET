@@ -37,6 +37,8 @@ import utils.FtpUtils;
 @Path("/{username}/file/{filename}")
 public class FileResource {
 	
+	public final static String RES_ROOT = "file";
+	
 	/**
 	 * Permet au client de télécharger un fichier. La méthode
 	 * communique avec le serveur FTP pour récupérer le fichier, 
