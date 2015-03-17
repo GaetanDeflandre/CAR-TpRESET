@@ -1,16 +1,6 @@
 TP2: Passerelle REST
 ====================
 
-* * *
-
-scr/main/java -> projet marven
-
-target -> les fichiers .class projet marven
-
-target et lib dans gitignore
-
-* * *
-
 ## Auteurs
 
  - Samuel GRANDSIR
@@ -18,6 +8,8 @@ target et lib dans gitignore
  
  
 ## Introduction
+
+Passerelle REST, en java, reliant un serveur FTP avec un client inviter de commande ou navigateur web. Cette passerelle est multi utilisateur.
 
 
 ## Architecture
