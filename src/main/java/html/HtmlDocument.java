@@ -6,7 +6,7 @@ import uk.co.wireweb.web.html.html5.tag.Head;
 import uk.co.wireweb.web.html.html5.tag.Html;
 
 /**
- * Simple page HTML avec un head et un body, le tout dans une balise html.
+ * Simple page HTML avec un head et un body, le tout dans une balise HTML.
  */
 public class HtmlDocument extends HtmlContainer {
 

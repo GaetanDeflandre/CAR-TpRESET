@@ -1,7 +1,8 @@
 package json;
 
 /**
- * Classe abstraite qui permet d'uniformiser les classes qui contienne du JSON.
+ * Classe abstraite qui permet d'uniformiser les classes qui contiennent du
+ * JSON.
  */
 public abstract class JsonContainer {
 
@@ -15,7 +16,7 @@ public abstract class JsonContainer {
 	// METHODS //
 
 	/**
-	 * Génére le contenu JSON en fonction des caractéristique de la classe.
+	 * Génère le contenu JSON en fonction des caractéristiques de la classe.
 	 */
 	protected abstract void generate();
 

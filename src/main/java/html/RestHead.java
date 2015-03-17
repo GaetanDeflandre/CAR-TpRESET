@@ -6,8 +6,8 @@ import uk.co.wireweb.web.html.html5.tag.Meta;
 import uk.co.wireweb.web.html.html5.tag.Title;
 
 /**
- * Classe amélioré de la classe Head. Cette classe represente la balise head
- * d'HTML pour un document HTML du projet. Cette classe est formatté pour avoir:
+ * Classe améliorée de la classe Head. Cette classe représente la balise head
+ * d'HTML pour un document HTML du projet. Cette classe est formatée pour avoir:
  * <ul>
  * <li>un encodage (charset)</li>
  * <li>un titre</li>

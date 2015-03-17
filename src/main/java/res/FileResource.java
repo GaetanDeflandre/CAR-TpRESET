@@ -36,7 +36,10 @@ import utils.FtpUtils;
 @Path("/{username}/file/{filename}")
 public class FileResource {
 	
-	public final static String RES_ROOT = "file";
+	/**
+	 * Nom de la ressource, correspond au nom présent dans l'URL.
+	 */
+	public final static String RES_NAME = "file";
 	
 	/**
 	 * Permet au client de télécharger un fichier. La méthode

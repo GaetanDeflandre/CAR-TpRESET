@@ -6,7 +6,7 @@ package html;
 public class RestUTF8Head extends RestHead {
 
 	/**
-	 * Construit un head UTF8 pour les document du project.
+	 * Construit un head UTF8 pour les documents du projet.
 	 * 
 	 * @param pageTitle
 	 *            Le titre de la page.

@@ -8,15 +8,15 @@ import org.apache.commons.net.ftp.FTPFile;
 public class HtmlRestListDocument extends HtmlDocument {
 
 	/**
-	 * Construit la page HTML correspondant à la list de fichiers du serveur
-	 * FTP, pour ce project.
+	 * Construit la page HTML correspondant à la liste de fichiers du serveur
+	 * FTP, pour ce projet.
 	 * 
 	 * @param username
 	 *            Le nom d'utilisateur courant.
 	 * @param path
 	 *            Le chemin du dossier couramment visité.
 	 * @param files
-	 *            Les fichier du dossier à afficher sur la page.
+	 *            Les fichiers du dossier à afficher sur la page.
 	 */
 	public HtmlRestListDocument(final String username, final String path,
 			final FTPFile[] files) {

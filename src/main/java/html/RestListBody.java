@@ -21,12 +21,12 @@ public class RestListBody extends Body {
 	// ATTRIBUTES //
 
 	/**
-	 * Nom de l'utilisateur utiliser pour recréer les URLs.
+	 * Nom de l'utilisateur utilisé pour recréer les URLs.
 	 */
 	private String username;
 
 	/**
-	 * Chemin courant utiliser pour l'affichage.
+	 * Chemin courant utilisé pour l'affichage.
 	 */
 	private String path;
 
@@ -36,7 +36,7 @@ public class RestListBody extends Body {
 	private FTPFile[] files;
 
 	/**
-	 * Affichage HTML utiliser pour le dossier parent.
+	 * Text HTML utilisé pour le dossier parent.
 	 */
 	private String UPDIR_MSG = "Dossier parent &#8682;";
 
@@ -44,12 +44,12 @@ public class RestListBody extends Body {
 
 	/**
 	 * Construit le body HTML qui contient le chemin <tt>path</tt>, la liste des
-	 * fichier <tt>files</tt> avec les liens utilisant <tt>username</tt>.
+	 * fichiers <tt>files</tt> avec les liens utilisant <tt>username</tt>.
 	 * 
 	 * @param username
-	 *            Nom de l'utilisateur utiliser pour recréer les URLs.
+	 *            Nom de l'utilisateur utilisé pour recréer les URLs.
 	 * @param path
-	 *            Chemin courant utiliser pour l'affichage.
+	 *            Chemin courant utilisé pour l'affichage.
 	 * @param files
 	 *            Les fichiers à afficher
 	 */
@@ -60,9 +60,9 @@ public class RestListBody extends Body {
 		this.files = files;
 		createBody();
 	}
-	
+
 	// METHOD //
-	
+
 	/**
 	 * Méthode de création du contenu HTML.
 	 */
@@ -78,7 +78,7 @@ public class RestListBody extends Body {
 
 		// cdup link
 		parentAnchor.href(AppConfig.RES_ABS_PATH + username + "/"
-				+ DirResource.RES_ROOT + "/cdup");
+				+ DirResource.RES_NAME + "/cdup");
 		parentContent.body(UPDIR_MSG);
 		parentAnchor.body(parentContent.toString());
 		parentItem.body(parentAnchor.toString());
@@ -93,14 +93,14 @@ public class RestListBody extends Body {
 			if (file.isDirectory()) { // Directory case
 
 				anchor.href(AppConfig.RES_ABS_PATH + username + "/"
-						+ DirResource.RES_ROOT + "/" + file.getName());
+						+ DirResource.RES_NAME + "/" + file.getName());
 				anchor.body(file.getName());
 				item.body(anchor.toString());
 
 			} else if (file.isFile()) { // File case
 
 				anchor.href(AppConfig.RES_ABS_PATH + username + "/"
-						+ FileResource.RES_ROOT + "/" + file.getName());
+						+ FileResource.RES_NAME + "/" + file.getName());
 				anchor.body(file.getName());
 				item.body(anchor.toString());
 

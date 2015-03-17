@@ -40,7 +40,7 @@ public enum CharsetEnum {
 
 	/**
 	 * @return le type d'encodage sous forme d'une chaine de caractère
-	 *         correspondant à la syntaxe HTML. Ne rcontient aucune balise, ni
+	 *         correspondant à la syntaxe HTML. Ne contient aucune balise, ni
 	 *         syntaxe d'attribut HTML.
 	 */
 	public String toString() {
