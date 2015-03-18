@@ -18,14 +18,14 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
-import user.UserManager;
+import user.PathManager;
 import utils.FtpUtils;
 
 /**
  * Représente une ressource REST de type fichier. Précisément, 
  * une instance de cette classe représente un fichier sur le 
  * serveur FTP de l'application. Les méthodes de cette classe 
- * se réfèrent à la classe UserManager pour obtenir les chemins
+ * se réfèrent à la classe PathManager pour obtenir les chemins
  * de répertoire courant de l'utilisateur. Les noms de fichier
  * passés en argument sont donc relatifs au répertoire courant 
  * de l'utilisateur.
@@ -67,8 +67,8 @@ public class FileResource {
 		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
 		
 		// CHANGE DIR
-		UserManager userManager = UserManager.getInstance();
-		path = userManager.getPath(username);
+		PathManager pathManager = PathManager.getInstance();
+		path = pathManager.getPath(username);
 		client.changeWorkingDirectory(path);
 		
 		client.setFileType(FTP.BINARY_FILE_TYPE);
@@ -104,8 +104,8 @@ public class FileResource {
 		client.login(username, FtpUtils.PASS);
 		
 		// CHANGE DIR
-		UserManager userManager = UserManager.getInstance();
-		path = userManager.getPath(username);
+		PathManager pathManager = PathManager.getInstance();
+		path = pathManager.getPath(username);
 		client.changeWorkingDirectory(path);
 		
 		deletionSuccessful = client.deleteFile(filename);
@@ -151,8 +151,8 @@ public class FileResource {
 		client.login(username, FtpUtils.PASS);
 		
 		// CHANGE DIR
-		UserManager userManager = UserManager.getInstance();
-		path = userManager.getPath(username);
+		PathManager pathManager = PathManager.getInstance();
+		path = pathManager.getPath(username);
 		client.changeWorkingDirectory(path);
 		
 		client.setFileType(FTP.BINARY_FILE_TYPE);
