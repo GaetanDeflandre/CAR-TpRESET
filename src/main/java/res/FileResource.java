@@ -18,10 +18,9 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
-import user.PathManager;
-import utils.FtpUtils;
 import plateform.exceptions.RestNotFoundException;
 import plateform.exceptions.RestServerErrorException;
+import user.PathManager;
 import utils.FtpUtils;
 
 /**
@@ -88,7 +87,6 @@ public class FileResource {
 
 		// ERROR CASE
 		if (fileInput == null) {
-			System.out.println("testtqsedt");
 			throw new RestServerErrorException(
 					"&eacute;chec obtenrion de fichier.");
 		}
