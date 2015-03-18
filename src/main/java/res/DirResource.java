@@ -21,13 +21,9 @@ import json.JsonRestList;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
-import uk.co.wireweb.web.html.html5.tag.I;
-import user.HTTPAuthenticator;
+import plateform.exceptions.RestNotFoundException;
 import user.PathManager;
 import utils.FtpUtils;
-import exception.BadAuthorizationHeaderException;
-import exception.RestException;
-import exception.UnauthorizedException;
 
 /**
  * Représente une ressource REST de type répertoire. Précisément, une instance
@@ -86,7 +82,7 @@ public class DirResource {
 			path = client.printWorkingDirectory();
 			pathManager.putPath(username, path);
 		}
-
+		
 		// LIST
 		FTPFile[] files = client.listFiles();
 
@@ -139,10 +135,12 @@ public class DirResource {
 
 		// CHANGE DIRECTORY
 		path = pathManager.getPath(username);
-		client.changeWorkingDirectory(path);
-		path = client.printWorkingDirectory();
-		pathManager.putPath(username, path);
-
+		
+		if (!client.changeWorkingDirectory(path)) {
+			path = client.printWorkingDirectory();
+			pathManager.putPath(username, path);
+		}
+		
 		// LIST
 		final FTPFile[] files = client.listFiles();
 		final JsonRestList json = new JsonRestList(username, path, files);
@@ -191,10 +189,18 @@ public class DirResource {
 
 		// CHANGE DIR
 		PathManager pathManager = PathManager.getInstance();
-		client.changeWorkingDirectory(pathManager.getPath(username));
-		if(!client.changeWorkingDirectory(dirName)){
-			throw new RestException("aie");
+		if (!client.changeWorkingDirectory(pathManager.getPath(username))) {
+			client.logout();
+			client.disconnect();
+			throw new RestNotFoundException();
 		}
+		
+		if (!client.changeWorkingDirectory(dirName)) {
+			client.logout();
+			client.disconnect();
+			throw new RestNotFoundException();
+		}
+		
 		pathManager.putPath(username, client.printWorkingDirectory());
 
 		// QUIT
