@@ -15,8 +15,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 import plateform.rs.JaxRsApiApplication;
-import plateform.rs.PeopleRestService;
-import plateform.services.PeopleService;
 import res.DirResource;
 import res.FileResource;
 
@@ -54,16 +52,6 @@ public class AppConfig {
 	@Bean
 	public JaxRsApiApplication jaxRsApiApplication() {
 		return new JaxRsApiApplication();
-	}
-
-	@Bean
-	public PeopleRestService peopleRestService() {
-		return new PeopleRestService();
-	}
-
-	@Bean
-	public PeopleService peopleService() {
-		return new PeopleService();
 	}
 
 	@Bean
