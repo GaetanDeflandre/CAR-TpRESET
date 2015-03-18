@@ -20,6 +20,7 @@ import json.JsonRestList;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
+import exception.RestException;
 import user.UserManager;
 import utils.FtpUtils;
 
@@ -133,10 +134,9 @@ public class DirResource {
 
 		// CHANGE DIRECTORY
 		path = userManager.getPath(username);
-		if (!client.changeWorkingDirectory(path)) {
-			path = client.printWorkingDirectory();
-			userManager.putPath(username, path);
-		}
+		client.changeWorkingDirectory(path);
+		path = client.printWorkingDirectory();
+		userManager.putPath(username, path);
 
 		// LIST
 		final FTPFile[] files = client.listFiles();
@@ -187,7 +187,9 @@ public class DirResource {
 		// CHANGE DIR
 		UserManager userManager = UserManager.getInstance();
 		client.changeWorkingDirectory(userManager.getPath(username));
-		client.changeWorkingDirectory(dirName);
+		if(!client.changeWorkingDirectory(dirName)){
+			throw new RestException("aie");
+		}
 		userManager.putPath(username, client.printWorkingDirectory());
 
 		// QUIT
