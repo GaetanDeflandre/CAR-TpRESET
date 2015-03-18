@@ -85,7 +85,6 @@ public class FileResource {
 
 		// ERROR CASE
 		if (fileInput == null) {
-			System.out.println("testtqsedt");
 			throw new RestServerErrorException(
 					"&eacute;chec obtenrion de fichier.");
 		}
