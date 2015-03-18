@@ -18,17 +18,20 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
+import user.PathManager;
+import utils.FtpUtils;
 import plateform.exceptions.RestNotFoundException;
 import plateform.exceptions.RestServerErrorException;
-import user.UserManager;
 import utils.FtpUtils;
 
 /**
- * Représente une ressource REST de type fichier. Précisément, une instance de
- * cette classe représente un fichier sur le serveur FTP de l'application. Les
- * méthodes de cette classe se réfèrent à la classe UserManager pour obtenir les
- * chemins de répertoire courant de l'utilisateur. Les noms de fichier passés en
- * argument sont donc relatifs au répertoire courant de l'utilisateur.
+ * Représente une ressource REST de type fichier. Précisément, 
+ * une instance de cette classe représente un fichier sur le 
+ * serveur FTP de l'application. Les méthodes de cette classe 
+ * se réfèrent à la classe PathManager pour obtenir les chemins
+ * de répertoire courant de l'utilisateur. Les noms de fichier
+ * passés en argument sont donc relatifs au répertoire courant 
+ * de l'utilisateur.
  * 
  * @author Samuel Grandsir
  *
@@ -68,14 +71,14 @@ public class FileResource {
 		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
 
 		// CHANGE DIR
-		UserManager userManager = UserManager.getInstance();
-		path = userManager.getPath(username);
+		PathManager pathManager = PathManager.getInstance();
+		path = pathManager.getPath(username);
 		if (!client.changeWorkingDirectory(path)) {
 			client.logout();
 			client.disconnect();
 			throw new RestNotFoundException();
 		}
-
+		
 		client.setFileType(FTP.BINARY_FILE_TYPE);
 		InputStream fileInput = client.retrieveFileStream(filename);
 
@@ -117,14 +120,14 @@ public class FileResource {
 		client.login(username, FtpUtils.PASS);
 
 		// CHANGE DIR
-		UserManager userManager = UserManager.getInstance();
-		path = userManager.getPath(username);
+		PathManager pathManager = PathManager.getInstance();
+		path = pathManager.getPath(username);
 		if (!client.changeWorkingDirectory(path)) {
 			client.logout();
 			client.disconnect();
 			throw new RestNotFoundException();
 		}
-
+		
 		deletionSuccessful = client.deleteFile(filename);
 
 		// QUIT
@@ -172,14 +175,14 @@ public class FileResource {
 		client.login(username, FtpUtils.PASS);
 
 		// CHANGE DIR
-		UserManager userManager = UserManager.getInstance();
-		path = userManager.getPath(username);
+		PathManager pathManager = PathManager.getInstance();
+		path = pathManager.getPath(username);
 		if (!client.changeWorkingDirectory(path)) {
 			client.logout();
 			client.disconnect();
 			throw new RestNotFoundException();
 		}
-
+		
 		client.setFileType(FTP.BINARY_FILE_TYPE);
 		storeSuccessful = client.storeFile(filename, inputStream);
 

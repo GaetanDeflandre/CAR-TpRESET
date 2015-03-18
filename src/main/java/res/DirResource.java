@@ -7,7 +7,7 @@ import java.net.SocketException;
 import java.net.URI;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -22,14 +22,14 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
 import plateform.exceptions.RestNotFoundException;
-import user.UserManager;
+import user.PathManager;
 import utils.FtpUtils;
 
 /**
  * Représente une ressource REST de type répertoire. Précisément, une instance
  * de cette classe permet de récupérer le contenu d'un répertoire présent sur le
  * serveur FTP de l'application. Les méthodes de cette classe se réfèrent à la
- * classe UserManager pour obtenir les chemins de répertoire courant de
+ * classe PathManager pour obtenir les chemins de répertoire courant de
  * l'utilisateur.<br/>
  * 
  * Url: http://localhost:8080/rest/api/toto/dir
@@ -45,7 +45,7 @@ public class DirResource {
 	/**
 	 * Liste le contenu du répertoire courant, provenant du serveur FTP, au
 	 * format <strong>HTML</strong>. Le répertoire courant est enregistré dans
-	 * la classe <tt>UserManager</tt>.<br/>
+	 * la classe <tt>PathManager</tt>.<br/>
 	 * Chaque élément du répertoire listé est un lien:
 	 * <ul>
 	 * <li>Si l'élément est un autre répertoire, alors un "cd" est effectué via
@@ -58,30 +58,29 @@ public class DirResource {
 	 *            Le nom de l'utilisateur courant conservé dans l'URL. Nom de
 	 *            l'utilisateur dans l'URL.
 	 * @return Le contenu du répertoire courant au format HTML.
-	 * @throws IOException
+	 * @throws I(Base64.decode("dG90bzptZHA="))OException
 	 */
 	@GET
 	@Produces({ MediaType.TEXT_HTML })
-	public String dirHtml(@PathParam("username") String username)
+	public String dirHtml(@PathParam("username") String username, @HeaderParam("authorization") String authorization)
 			throws IOException {
 
 		String path;
 		final FTPClient client = new FTPClient();
-
+		
 		// CONNECT
 		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
 
 		// LOG
 		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
 
-		UserManager userManager = UserManager.getInstance();
+		PathManager pathManager = PathManager.getInstance();
 
 		// CHANGE DIRECTORY
-		path = userManager.getPath(username);
-		
+		path = pathManager.getPath(username);
 		if (!client.changeWorkingDirectory(path)) {
 			path = client.printWorkingDirectory();
-			userManager.putPath(username, path);
+			pathManager.putPath(username, path);
 		}
 		
 		// LIST
@@ -100,7 +99,7 @@ public class DirResource {
 	/**
 	 * Retourne le contenu du répertoire courant, provenant du serveur FTP, au
 	 * format <strong>JSON</strong>. Le répertoire courant est enregistré dans
-	 * la classe <tt>UserManager</tt>. Il est possible de récupérer ce contenu
+	 * la classe <tt>PathManager</tt>. Il est possible de récupérer ce contenu
 	 * avec la commande <tt>curl</tt>.<br/>
 	 * <strong>Exemple:</strong><br/>
 	 * <code>
@@ -132,14 +131,14 @@ public class DirResource {
 		// LOG
 		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
 
-		UserManager userManager = UserManager.getInstance();
+		PathManager pathManager = PathManager.getInstance();
 
 		// CHANGE DIRECTORY
-		path = userManager.getPath(username);
+		path = pathManager.getPath(username);
 		
 		if (!client.changeWorkingDirectory(path)) {
 			path = client.printWorkingDirectory();
-			userManager.putPath(username, path);
+			pathManager.putPath(username, path);
 		}
 		
 		// LIST
@@ -154,7 +153,7 @@ public class DirResource {
 	}
 
 	/**
-	 * Met à jour le chemin dans la <tt>UserManager</tt> pour l'utilisateur
+	 * Met à jour le chemin dans la <tt>PathManager</tt> pour l'utilisateur
 	 * courant. Le nom du répertoire cible <tt>dirName</tt> passés en argument
 	 * est en relatif. Il correspond à un répertoire du chemin avec l'appel.
 	 * 
@@ -189,18 +188,20 @@ public class DirResource {
 		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
 
 		// CHANGE DIR
-		UserManager userManager = UserManager.getInstance();
-		if (!client.changeWorkingDirectory(userManager.getPath(username))) {
+		PathManager pathManager = PathManager.getInstance();
+		if (!client.changeWorkingDirectory(pathManager.getPath(username))) {
 			client.logout();
 			client.disconnect();
 			throw new RestNotFoundException();
 		}
+		
 		if (!client.changeWorkingDirectory(dirName)) {
 			client.logout();
 			client.disconnect();
 			throw new RestNotFoundException();
 		}
-		userManager.putPath(username, client.printWorkingDirectory());
+		
+		pathManager.putPath(username, client.printWorkingDirectory());
 
 		// QUIT
 		client.logout();
@@ -213,7 +214,7 @@ public class DirResource {
 	}
 
 	/**
-	 * Met à jour le chemin dans la <tt>UserManager</tt> pour l'utilisateur
+	 * Met à jour le chemin dans la <tt>PathManager</tt> pour l'utilisateur
 	 * courant vers le répertoire parent, si autorisé par le serveur.
 	 * 
 	 * @param uriInfo
