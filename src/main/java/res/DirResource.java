@@ -7,6 +7,7 @@ import java.net.SocketException;
 import java.net.URI;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -20,7 +21,7 @@ import json.JsonRestList;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
-import exception.RestException;
+import plateform.exceptions.RestNotFoundException;
 import user.UserManager;
 import utils.FtpUtils;
 
@@ -77,11 +78,12 @@ public class DirResource {
 
 		// CHANGE DIRECTORY
 		path = userManager.getPath(username);
+		
 		if (!client.changeWorkingDirectory(path)) {
 			path = client.printWorkingDirectory();
 			userManager.putPath(username, path);
 		}
-
+		
 		// LIST
 		FTPFile[] files = client.listFiles();
 
@@ -134,10 +136,12 @@ public class DirResource {
 
 		// CHANGE DIRECTORY
 		path = userManager.getPath(username);
-		client.changeWorkingDirectory(path);
-		path = client.printWorkingDirectory();
-		userManager.putPath(username, path);
-
+		
+		if (!client.changeWorkingDirectory(path)) {
+			path = client.printWorkingDirectory();
+			userManager.putPath(username, path);
+		}
+		
 		// LIST
 		final FTPFile[] files = client.listFiles();
 		final JsonRestList json = new JsonRestList(username, path, files);
@@ -186,9 +190,15 @@ public class DirResource {
 
 		// CHANGE DIR
 		UserManager userManager = UserManager.getInstance();
-		client.changeWorkingDirectory(userManager.getPath(username));
-		if(!client.changeWorkingDirectory(dirName)){
-			throw new RestException("aie");
+		if (!client.changeWorkingDirectory(userManager.getPath(username))) {
+			client.logout();
+			client.disconnect();
+			throw new RestNotFoundException();
+		}
+		if (!client.changeWorkingDirectory(dirName)) {
+			client.logout();
+			client.disconnect();
+			throw new RestNotFoundException();
 		}
 		userManager.putPath(username, client.printWorkingDirectory());
 
