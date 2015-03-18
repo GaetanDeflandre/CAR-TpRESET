@@ -22,8 +22,12 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
 import plateform.exceptions.RestNotFoundException;
+import uk.co.wireweb.web.html.html5.tag.I;
+import user.HTTPAuthenticator;
 import user.PathManager;
 import utils.FtpUtils;
+import exception.BadAuthorizationHeaderException;
+import exception.UnauthorizedException;
 
 /**
  * Représente une ressource REST de type répertoire. Précisément, une instance
@@ -62,17 +66,26 @@ public class DirResource {
 	 */
 	@GET
 	@Produces({ MediaType.TEXT_HTML })
-	public String dirHtml(@PathParam("username") String username, @HeaderParam("authorization") String authorization)
+	public String dirHtml(@PathParam("username") String username, 
+						  @HeaderParam("authorization") String authorization)
 			throws IOException {
 
 		String path;
 		final FTPClient client = new FTPClient();
+		HTTPAuthenticator authenticator;
+		
+		try {
+			authenticator = new HTTPAuthenticator(authorization);
+		} catch (BadAuthorizationHeaderException e) {
+			throw new UnauthorizedException(username);
+		}
 		
 		// CONNECT
 		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
 
 		// LOG
-		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
+		if (!client.login(username, authenticator.getPassword()))
+			throw new UnauthorizedException(username);
 
 		PathManager pathManager = PathManager.getInstance();
 
@@ -114,7 +127,8 @@ public class DirResource {
 	@GET
 	@Path("/json")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public String dirJSon(@PathParam("username") String username)
+	public String dirJSon(@PathParam("username") String username, 
+			  			  @HeaderParam("authorization") String authorization)
 			throws IOException {
 
 		/*
@@ -125,11 +139,20 @@ public class DirResource {
 		String path;
 		final FTPClient client = new FTPClient();
 
+		HTTPAuthenticator authenticator;
+		
+		try {
+			authenticator = new HTTPAuthenticator(authorization);
+		} catch (BadAuthorizationHeaderException e) {
+			throw new UnauthorizedException(username);
+		}
+		
 		// CONNECT
 		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
 
 		// LOG
-		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
+		if (!client.login(username, authenticator.getPassword()))
+			throw new UnauthorizedException(username);
 
 		PathManager pathManager = PathManager.getInstance();
 
@@ -173,7 +196,8 @@ public class DirResource {
 	@Path("/{dirname}")
 	public Response changeDir(@Context UriInfo uriInfo,
 			@PathParam("dirname") String dirName,
-			@PathParam("username") String username) throws SocketException,
+			@PathParam("username") String username, 
+			@HeaderParam("authorization") String authorization) throws SocketException,
 			IOException {
 
 		Response res;
@@ -181,11 +205,20 @@ public class DirResource {
 
 		FTPClient client = new FTPClient();
 
+		HTTPAuthenticator authenticator;
+		
+		try {
+			authenticator = new HTTPAuthenticator(authorization);
+		} catch (BadAuthorizationHeaderException e) {
+			throw new UnauthorizedException(username);
+		}
+		
 		// CONNECT
 		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
 
 		// LOG
-		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
+		if (!client.login(username, authenticator.getPassword()))
+			throw new UnauthorizedException(username);
 
 		// CHANGE DIR
 		PathManager pathManager = PathManager.getInstance();
@@ -230,10 +263,11 @@ public class DirResource {
 	@GET
 	@Path("/cdup")
 	public Response changeToParentDir(@Context UriInfo uriInfo,
-			@PathParam("username") String username) throws SocketException,
+			@PathParam("username") String username, 
+			@HeaderParam("authorization") String authorization) throws SocketException,
 			IOException {
 
-		return this.changeDir(uriInfo, "..", username);
+		return this.changeDir(uriInfo, "..", username, authorization);
 	}
 
 }
