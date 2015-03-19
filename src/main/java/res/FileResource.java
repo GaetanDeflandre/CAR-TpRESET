@@ -17,13 +17,12 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
-import plateform.exceptions.RestNotFoundException;
+import plateform.exceptions.BadAuthorizationHeaderException;
 import plateform.exceptions.RestServerErrorException;
+import plateform.exceptions.UnauthorizedException;
 import user.HTTPAuthenticator;
 import user.PathManager;
 import utils.FtpUtils;
-import exception.BadAuthorizationHeaderException;
-import exception.UnauthorizedException;
 
 /**
  * Représente une ressource REST de type fichier. Précisément, 

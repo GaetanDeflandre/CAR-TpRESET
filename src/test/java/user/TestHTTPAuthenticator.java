@@ -1,11 +1,11 @@
 package user;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.commons.net.util.Base64;
 import org.junit.Test;
 
-import exception.BadAuthorizationHeaderException;
+import plateform.exceptions.BadAuthorizationHeaderException;
 
 public class TestHTTPAuthenticator {
 
