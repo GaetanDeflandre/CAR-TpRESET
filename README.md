@@ -16,22 +16,13 @@ utilisateur.
 
 ## Architecture
 
-Le projet est constitué de différents packages:
-
- - res: contenant les classes des ressources REST.
- - user: contenant les classes liées aux utilisateurs connectés sur
-   la passerelle REST.
- - utils: contenant des informations sur le serveur FTP.
- - plateform: contenant les classes directement liées à la passerelle
-   REST.
-   - plateform: contenant la classe de démarrage de la
-     passerelle REST.
-   - plateform.config: contenant la classe de configuration de la
-     passerelle REST.
-   - plateform.exceptions: contenant les classes d'exceptions de la
-     passerelle REST.
- - html: contenant les classes permettant de générer du contenu HTML.
- - json: contenant les classes permettant de générer du contenu JSON.
+L'application REST est basée sur deux ressources principales, l'une 
+gérant les fichiers, l'autre les répertoires. Dans l'URL, se trouve 
+toujours le nom de l'utilisateur, suivi d'un mot clé identifiant le 
+type de ressource ("dir" ou "file") et terminé éventuellement par 
+le nom d'un fichier ou d'un répertoire. Un composant de l'application 
+se charge de la gestion des chemins pour chaque utilisateur et de 
+leur authentification HTTP via la méthode Basic.
 
 
 ## Design
