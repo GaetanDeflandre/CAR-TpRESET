@@ -9,7 +9,6 @@ import java.io.OutputStream;
 import java.net.SocketException;
 
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.geronimo.mail.util.Base64;
