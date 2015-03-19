@@ -22,7 +22,6 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
 import plateform.exceptions.RestNotFoundException;
-import uk.co.wireweb.web.html.html5.tag.I;
 import user.HTTPAuthenticator;
 import user.PathManager;
 import utils.FtpUtils;
@@ -63,7 +62,7 @@ public class DirResource {
 	 *            l'utilisateur dans l'URL.
 	 * @param authorization l'en-tête d'authentification HTTP de la requête
 	 * @return Le contenu du répertoire courant au format HTML.
-	 * @throws I(Base64.decode("dG90bzptZHA="))OException
+	 * @throws IOException
 	 */
 	@GET
 	@Produces({ MediaType.TEXT_HTML })
