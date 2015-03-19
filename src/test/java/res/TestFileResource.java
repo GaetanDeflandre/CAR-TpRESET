@@ -1,6 +1,6 @@
 package res;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -9,15 +9,20 @@ import java.io.OutputStream;
 import java.net.SocketException;
 
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.geronimo.mail.util.Base64;
 import org.junit.Test;
 
 import utils.FtpUtils;
 
 public class TestFileResource {
+	
+	String userTest = "test", mdpTest = "testmdp";
+	String filenameTest = "JUnit_test";
+	String filenameTest2 = "JUnit_test2";
 
 	String fileContent = "Iamque non umbratis fallaciis res agebatur, "
 			+ "sed qua palatium est extra muros, armatis omne circumdedit. "
@@ -37,8 +42,6 @@ public class TestFileResource {
 	@Test
 	public void testGetFile() throws SocketException, IOException {
 		FileResource resource = new FileResource();
-		String userTest = "test", mdpTest = "testmdp";
-		String filenameTest = "JUnit_test";
 		FTPClient client = new FTPClient();
 		OutputStream out;
 		InputStream in;
@@ -71,10 +74,7 @@ public class TestFileResource {
 	@Test
 	public void testPutFile() throws SocketException, IOException {
 		FileResource resource = new FileResource();
-		String userTest = "test", mdpTest = "testmdp";
-		String filenameTest = "JUnit_test2";
 		FTPClient client = new FTPClient();
-		OutputStream out;
 		InputStream in;
 		byte[] authorizationHeader;
 		byte[] readBuffer = new byte[1];
@@ -83,14 +83,14 @@ public class TestFileResource {
 		
 		in = new ByteArrayInputStream(fileContent.getBytes());
 		authorizationHeader = Base64.encode((userTest+":"+mdpTest).getBytes());
-		res = resource.storeFile(filenameTest, userTest, in, "Basic "+new String(authorizationHeader));
+		res = resource.storeFile(filenameTest2, userTest, in, "Basic "+new String(authorizationHeader));
 		assertEquals(200, res.getStatus());
 		
 		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
 		client.login(userTest, mdpTest);
 		
 		// Stockage du fichier de test
-		in = client.retrieveFileStream(filenameTest);
+		in = client.retrieveFileStream(filenameTest2);
 		
 		while (in.read(readBuffer) != -1)
 			fileRetrieved += new String(readBuffer);
@@ -102,6 +102,35 @@ public class TestFileResource {
 		System.out.println(fileRetrieved);
 		
 		assertEquals(fileContent, fileRetrieved);
+	}
+	
+	@Test
+	public void testDeleteFile() throws IOException {
+		FileResource resource = new FileResource();
+		byte[] authorizationHeader;
+		Response res1, res2;
+		FTPClient client = new FTPClient();
+		FTPFile[] files;
+		
+		authorizationHeader = Base64.encode((userTest+":"+mdpTest).getBytes());
+		res1 = resource.deleteFile(filenameTest, userTest, "Basic "+new String(authorizationHeader));
+		res2 = resource.deleteFile(filenameTest2, userTest, "Basic "+new String(authorizationHeader));
+		
+		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
+		client.login(userTest, mdpTest);
+		
+		files = client.listFiles();
+		
+		for (FTPFile file : files) {
+			assertNotEquals(filenameTest, file.getName());
+			assertNotEquals(filenameTest2, file.getName());
+		}
+		
+		client.logout();
+		client.disconnect();
+		
+		assertEquals(200, res1.getStatus());
+		assertEquals(200, res2.getStatus());
 	}
 	
 }
