@@ -2,7 +2,7 @@ package user;
 
 import org.apache.commons.net.util.Base64;
 
-import exception.BadAuthorizationHeaderException;
+import plateform.exceptions.BadAuthorizationHeaderException;
 
 /**
  * Représente les informations de connexion qu'envoie un client HTTP.

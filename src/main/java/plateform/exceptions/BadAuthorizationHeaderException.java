@@ -1,4 +1,4 @@
-package exception;
+package plateform.exceptions;
 
 /**
  * Exception renvoyée quand un header d'authentification HTTP
