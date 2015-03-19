@@ -15,7 +15,4 @@ public class FtpUtils {
 	 */
 	public final static int PORT = 2121;
 
-	public final static String LOGIN = "toto";
-	public final static String PASS = "mdp";
-
 }
