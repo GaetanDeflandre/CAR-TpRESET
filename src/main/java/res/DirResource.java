@@ -60,6 +60,7 @@ public class DirResource {
 	 * @param username
 	 *            Le nom de l'utilisateur courant conservé dans l'URL. Nom de
 	 *            l'utilisateur dans l'URL.
+	 * @param authorization l'en-tête d'authentification HTTP de la requête
 	 * @return Le contenu du répertoire courant au format HTML.
 	 * @throws IOException
 	 */
@@ -120,6 +121,7 @@ public class DirResource {
 	 * 
 	 * @param username
 	 *            Le nom de l'utilisateur courant conservé dans l'URL.
+	 * @param authorization l'en-tête d'authentification HTTP de la requête
 	 * @return Le contenu du répertoire courant au format JSON.
 	 * @throws IOException
 	 */
@@ -184,6 +186,7 @@ public class DirResource {
 	 * @param dirName
 	 *            Nom du répertoire cible.
 	 * @param username
+	 * @param authorization l'en-tête d'authentification HTTP de la requête
 	 *            Le nom de l'utilisateur courant conservé dans l'URL.
 	 * @return Une réponse pour l'application. Cette réponse à pour effet une
 	 *         redirection vers l'affichage du contenu du nouveau chemin en
@@ -253,6 +256,7 @@ public class DirResource {
 	 *            Information sur l'URI.
 	 * @param username
 	 *            Le nom de l'utilisateur courant conservé dans l'URL.
+	 * @param authorization l'en-tête d'authentification HTTP de la requête
 	 * @return Une réponse pour l'application. Cette réponse à pour effet, une
 	 *         redirection vers l'affichage du contenu du nouveau chemin en
 	 *         HTML.
