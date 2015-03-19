@@ -34,6 +34,11 @@ Le projet est constitué de différents packages:
  - json: contenant les classes permettant de générer du contenu JSON.
 
 
+## Design
+
+
+
+
 ## Gestion d'erreur
 
 ### Exception géré par le framework
