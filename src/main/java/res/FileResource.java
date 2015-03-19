@@ -11,21 +11,19 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
-import plateform.exceptions.BadAuthorizationHeaderException;
 import plateform.exceptions.RestNotFoundException;
 import plateform.exceptions.RestServerErrorException;
-import plateform.exceptions.UnauthorizedException;
 import user.HTTPAuthenticator;
 import user.PathManager;
 import utils.FtpUtils;
+import exception.BadAuthorizationHeaderException;
+import exception.UnauthorizedException;
 
 /**
  * Représente une ressource REST de type fichier. Précisément, 
@@ -62,8 +60,7 @@ public class FileResource {
 	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_OCTET_STREAM })
-	public InputStream getFile(@Context UriInfo uriInfo,
-			@PathParam("filename") String filename,
+	public InputStream getFile(@PathParam("filename") String filename,
 			@PathParam("username") String username,
 			@HeaderParam("authorization") String authorization) throws IOException {
 		FTPClient client = new FTPClient();
@@ -84,13 +81,12 @@ public class FileResource {
 		if (!client.login(username, authenticator.getPassword()))
 			throw new UnauthorizedException(username);
 
-		// CHANGE DIR
 		PathManager pathManager = PathManager.getInstance();
+		// CHANGE DIRECTORY
 		path = pathManager.getPath(username);
 		if (!client.changeWorkingDirectory(path)) {
-			client.logout();
-			client.disconnect();
-			throw new RestNotFoundException();
+			path = client.printWorkingDirectory();
+			pathManager.putPath(username, path);
 		}
 		
 		client.setFileType(FTP.BINARY_FILE_TYPE);
@@ -144,13 +140,12 @@ public class FileResource {
 		if (!client.login(username, authenticator.getPassword()))
 			throw new UnauthorizedException(username);
 
-		// CHANGE DIR
 		PathManager pathManager = PathManager.getInstance();
+		// CHANGE DIRECTORY
 		path = pathManager.getPath(username);
 		if (!client.changeWorkingDirectory(path)) {
-			client.logout();
-			client.disconnect();
-			throw new RestNotFoundException();
+			path = client.printWorkingDirectory();
+			pathManager.putPath(username, path);
 		}
 		
 		deletionSuccessful = client.deleteFile(filename);
@@ -210,13 +205,12 @@ public class FileResource {
 		if (!client.login(username, authenticator.getPassword()))
 			throw new UnauthorizedException(username);
 
-		// CHANGE DIR
 		PathManager pathManager = PathManager.getInstance();
+		// CHANGE DIRECTORY
 		path = pathManager.getPath(username);
 		if (!client.changeWorkingDirectory(path)) {
-			client.logout();
-			client.disconnect();
-			throw new RestNotFoundException();
+			path = client.printWorkingDirectory();
+			pathManager.putPath(username, path);
 		}
 		
 		client.setFileType(FTP.BINARY_FILE_TYPE);

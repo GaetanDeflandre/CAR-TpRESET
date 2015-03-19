@@ -21,12 +21,12 @@ import json.JsonRestList;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
-import plateform.exceptions.BadAuthorizationHeaderException;
 import plateform.exceptions.RestNotFoundException;
-import plateform.exceptions.UnauthorizedException;
 import user.HTTPAuthenticator;
 import user.PathManager;
 import utils.FtpUtils;
+import exception.BadAuthorizationHeaderException;
+import exception.UnauthorizedException;
 
 /**
  * Représente une ressource REST de type répertoire. Précisément, une instance
@@ -204,6 +204,7 @@ public class DirResource {
 
 		Response res;
 		URI uri;
+		String path;
 
 		FTPClient client = new FTPClient();
 
@@ -222,12 +223,14 @@ public class DirResource {
 		if (!client.login(username, authenticator.getPassword()))
 			throw new UnauthorizedException(username);
 
-		// CHANGE DIR
 		PathManager pathManager = PathManager.getInstance();
-		if (!client.changeWorkingDirectory(pathManager.getPath(username))) {
-			client.logout();
-			client.disconnect();
-			throw new RestNotFoundException();
+
+		// CHANGE DIRECTORY
+		path = pathManager.getPath(username);
+		
+		if (!client.changeWorkingDirectory(path)) {
+			path = client.printWorkingDirectory();
+			pathManager.putPath(username, path);
 		}
 		
 		if (!client.changeWorkingDirectory(dirName)) {
