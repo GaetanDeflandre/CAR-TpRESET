@@ -16,13 +16,13 @@ utilisateur.
 
 ## Architecture
 
-L'application REST est basée sur deux ressources principales, l'une 
-gérant les fichiers, l'autre les répertoires. Dans l'URL, se trouve 
-toujours le nom de l'utilisateur, suivi d'un mot clé identifiant le 
-type de ressource ("dir" ou "file") et terminé éventuellement par 
-le nom d'un fichier ou d'un répertoire. Un composant de l'application 
-se charge de la gestion des chemins pour chaque utilisateur et de 
-leur authentification HTTP via la méthode Basic.
+L'application REST est basée sur deux ressources principales, l'une
+gérant les fichiers, l'autre les répertoires. Dans l'URL, se trouve
+toujours le nom de l'utilisateur, suivi d'un mot clé identifiant le
+type de ressource ("dir" ou "file") et terminé éventuellement par le
+nom d'un fichier ou d'un répertoire. Un composant de l'application se
+charge de la gestion des chemins pour chaque utilisateur et de leur
+authentification HTTP via la méthode Basic.
 
 
 ## Design
@@ -89,6 +89,15 @@ DirRessource et FileRessource:
 		throw new RestNotFoundException();
 	}
 
+
+Vérification des authorizations utilisateur:
+
+	try {
+		authenticator = new HTTPAuthenticator(authorization);
+	} catch (BadAuthorizationHeaderException e) {
+		throw new UnauthorizedException(username);
+	}
+		
 
 Vérification après le retrieve:
 
@@ -184,6 +193,21 @@ Vérification après le store:
 
 
 ### Authentification
+
+	HTTPAuthenticator authenticator;
+		
+	try {
+		authenticator = new HTTPAuthenticator(authorization);
+	} catch (BadAuthorizationHeaderException e) {
+		throw new UnauthorizedException(username);
+	}
+		
+	// CONNECT
+	client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
+
+	// LOG
+	if (!client.login(username, authenticator.getPassword()))
+		throw new UnauthorizedException(username);
 
 
 ### Création de la liste de répertoire un HTML
