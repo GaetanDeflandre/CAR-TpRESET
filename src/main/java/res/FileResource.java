@@ -6,6 +6,7 @@ import java.io.InputStream;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -20,8 +21,11 @@ import org.apache.commons.net.ftp.FTPClient;
 
 import plateform.exceptions.RestNotFoundException;
 import plateform.exceptions.RestServerErrorException;
+import user.HTTPAuthenticator;
 import user.PathManager;
 import utils.FtpUtils;
+import exception.BadAuthorizationHeaderException;
+import exception.UnauthorizedException;
 
 /**
  * Représente une ressource REST de type fichier. Précisément, 
@@ -52,6 +56,7 @@ public class FileResource {
 	 * @param filename
 	 *            le nom du fichier à récupérer sur le serveur FTP.
 	 * @param username
+	 * @param authorization l'en-tête d'authentification HTTP de la requête
 	 * @return une instance d'InputStream permettant de lire le fichier.
 	 * @throws IOException
 	 */
@@ -59,15 +64,25 @@ public class FileResource {
 	@Produces({ MediaType.APPLICATION_OCTET_STREAM })
 	public InputStream getFile(@Context UriInfo uriInfo,
 			@PathParam("filename") String filename,
-			@PathParam("username") String username) throws IOException {
+			@PathParam("username") String username,
+			@HeaderParam("authorization") String authorization) throws IOException {
 		FTPClient client = new FTPClient();
 		String path;
 
+		HTTPAuthenticator authenticator;
+		
+		try {
+			authenticator = new HTTPAuthenticator(authorization);
+		} catch (BadAuthorizationHeaderException e) {
+			throw new UnauthorizedException(username);
+		}
+		
 		// CONNECT
 		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
 
 		// LOG
-		client.login(FtpUtils.LOGIN, FtpUtils.PASS);
+		if (!client.login(username, authenticator.getPassword()))
+			throw new UnauthorizedException(username);
 
 		// CHANGE DIR
 		PathManager pathManager = PathManager.getInstance();
@@ -100,23 +115,34 @@ public class FileResource {
 	 * @param filename
 	 *            le nom du fichier à supprimer sur le serveur FTP.
 	 * @param username
+	 * @param authorization l'en-tête d'authentification HTTP de la requête
 	 * @return une réponse HTTP positive en cas de succès, une réponse négative
 	 *         sinon.
 	 * @throws IOException
 	 */
 	@DELETE
 	public Response deleteFile(@PathParam("filename") String filename,
-			@PathParam("username") String username) throws IOException {
+			@PathParam("username") String username,
+			@HeaderParam("authorization") String authorization) throws IOException {
 
 		FTPClient client = new FTPClient();
 		String path;
 		boolean deletionSuccessful;
 
+		HTTPAuthenticator authenticator;
+		
+		try {
+			authenticator = new HTTPAuthenticator(authorization);
+		} catch (BadAuthorizationHeaderException e) {
+			throw new UnauthorizedException(username);
+		}
+		
 		// CONNECT
 		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
 
 		// LOG
-		client.login(username, FtpUtils.PASS);
+		if (!client.login(username, authenticator.getPassword()))
+			throw new UnauthorizedException(username);
 
 		// CHANGE DIR
 		PathManager pathManager = PathManager.getInstance();
@@ -153,6 +179,7 @@ public class FileResource {
 	 * @param inputStream
 	 *            l'instance d'InputStream permettant de lire le contenu du
 	 *            fichier à transférer.
+	 * @param authorization l'en-tête d'authentification HTTP de la requête
 	 * @return une réponse HTTP positive en cas de succès, une réponse négative
 	 *         sinon.
 	 * @throws IOException
@@ -160,18 +187,28 @@ public class FileResource {
 	@PUT
 	@Consumes({ MediaType.APPLICATION_OCTET_STREAM })
 	public Response storeFile(@PathParam("filename") String filename,
-			@PathParam("username") String username, InputStream inputStream)
+			@PathParam("username") String username, InputStream inputStream,
+			@HeaderParam("authorization") String authorization)
 			throws IOException {
 
 		FTPClient client = new FTPClient();
 		String path;
 		boolean storeSuccessful = false;
 
+		HTTPAuthenticator authenticator;
+		
+		try {
+			authenticator = new HTTPAuthenticator(authorization);
+		} catch (BadAuthorizationHeaderException e) {
+			throw new UnauthorizedException(username);
+		}
+		
 		// CONNECT
 		client.connect(FtpUtils.ADDRESS, FtpUtils.PORT);
 
 		// LOG
-		client.login(username, FtpUtils.PASS);
+		if (!client.login(username, authenticator.getPassword()))
+			throw new UnauthorizedException(username);
 
 		// CHANGE DIR
 		PathManager pathManager = PathManager.getInstance();
