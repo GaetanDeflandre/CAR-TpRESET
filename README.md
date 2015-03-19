@@ -36,7 +36,28 @@ Le projet est constitué de différents packages:
 
 ## Design
 
+Nos classes d'exception les classes de haut niveau:
+ - NotFoundException
+ - ServerErrorException
 
+
+Nous utilisons le décorateur des objets Response pour construire nos
+réponses:
+
+    Response
+        .status(Status.UNAUTHORIZED)
+	    .header("WWW-Authenticate", "Basic realm=\"Non authentifié pour " + username + "\"")
+		.build();
+
+
+Des classes abstraites permettent de généraliser les classes
+représentant du contenu HTML ou JSON.
+ - HtmlContainer.java
+ - JsonContainer.java
+
+
+Une arborescence de classes pour les documents HTML existe permettant
+une abstraction importante. (voir UML) 
 
 
 ## Gestion d'erreur
